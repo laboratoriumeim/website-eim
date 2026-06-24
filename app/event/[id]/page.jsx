@@ -1,12 +1,18 @@
-import pool from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
 async function getEvent(id) {
   try {
-    const [rows] = await pool.query('SELECT * FROM events WHERE id = ?', [id]);
-    return rows[0] || null;
+    const { data: event, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return event || null;
   } catch (error) {
-    console.error(error);
+    console.error('Fetch event detail error:', error);
     return null;
   }
 }

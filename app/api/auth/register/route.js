@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import bcrypt from 'bcryptjs';
 
 export async function POST(req) {
@@ -12,18 +12,20 @@ export async function POST(req) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    try {
-      await pool.execute(
-        'INSERT INTO users (nama, username, nim, email, telp, password) VALUES (?, ?, ?, ?, ?, ?)',
-        [nama, username, nim, email, telp, hashedPassword]
-      );
-      return NextResponse.json({ success: true, message: 'Pendaftaran berhasil' });
-    } catch (dbError) {
-      if (dbError.code === 'ER_DUP_ENTRY') {
+    const { error: dbError } = await supabase
+      .from('users')
+      .insert([
+        { nama, username, nim, email, telp, password: hashedPassword }
+      ]);
+
+    if (dbError) {
+      if (dbError.code === '23505') { // Postgres unique violation error code
         return NextResponse.json({ error: 'Email atau username sudah terdaftar!' }, { status: 409 });
       }
       throw dbError;
     }
+    
+    return NextResponse.json({ success: true, message: 'Pendaftaran berhasil' });
   } catch (error) {
     console.error('Register error:', error);
     return NextResponse.json({ error: 'Terjadi kesalahan server' }, { status: 500 });

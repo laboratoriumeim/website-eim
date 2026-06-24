@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import bcrypt from 'bcryptjs';
 import { setSession } from '@/lib/auth';
 
@@ -11,12 +11,15 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Username dan password dibutuhkan' }, { status: 400 });
     }
 
-    const [rows] = await pool.execute(
-      'SELECT * FROM users WHERE username = ?',
-      [username]
-    );
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single();
 
-    const user = rows[0];
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
 
     if (user && await bcrypt.compare(password, user.password)) {
       // Set session cookie

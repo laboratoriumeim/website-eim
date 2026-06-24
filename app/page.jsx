@@ -1,12 +1,18 @@
 import Link from 'next/link';
-import pool from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 
 async function getLatestNews() {
   try {
-    const [rows] = await pool.query('SELECT * FROM news ORDER BY date DESC LIMIT 3');
-    return rows;
+    const { data: rows, error } = await supabase
+      .from('news')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(3);
+
+    if (error) throw error;
+    return rows || [];
   } catch (error) {
-    console.error(error);
+    console.error('Fetch latest news error:', error);
     return [];
   }
 }

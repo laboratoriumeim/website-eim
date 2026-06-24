@@ -1062,8 +1062,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-control {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #fdfdfd;
+    border: 1px solid #d1d5db;
     border-radius: var(--border-radius-sm);
     padding: 12px 16px;
     color: var(--text-primary);
@@ -1074,8 +1074,8 @@ h1, h2, h3, h4, h5, h6 {
 .form-control:focus {
     outline: none;
     border-color: var(--accent-cyan);
-    box-shadow: 0 0 10px rgba(var(--accent-cyan-rgb), 0.2);
-    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 10px rgba(17, 180, 189, 0.15);
+    background: #ffffff;
 }
 
 .modal-input {
@@ -1084,13 +1084,12 @@ h1, h2, h3, h4, h5, h6 {
     border: 1px solid #cccccc !important;
 }
 .modal-input:focus {
-    background: #fdfdfd !important;
     border-color: var(--accent-cyan) !important;
-    box-shadow: 0 0 5px rgba(var(--accent-cyan-rgb), 0.5) !important;
+    box-shadow: 0 0 5px rgba(17, 180, 189, 0.3) !important;
 }
 
 select.form-control option {
-    background: var(--bg-card);
+    background: #ffffff;
     color: var(--text-primary);
 }
 
@@ -1597,4 +1596,49 @@ textarea.form-control {
 .event-date {
     font-size: 0.85rem;
     color: var(--text-muted);
+}
+
+/* Structure Page Filter Navbar */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 40px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.filter-tab {
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    background: transparent;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-tab:hover {
+    color: var(--accent-cyan);
+    background: rgba(0, 198, 198, 0.1);
+}
+
+.filter-tab.active {
+    background: linear-gradient(135deg, #111 0%, #333 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }

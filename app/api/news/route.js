@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { getSession } from '@/lib/auth';
 
 async function isAdmin() {
@@ -9,13 +9,15 @@ async function isAdmin() {
 
 export async function GET() {
   try {
-    const [rows] = await pool.query('SELECT * FROM news ORDER BY news_date DESC');
-    const formatted = rows.map(n => ({
-      ...n,
-      date: n.news_date
-    }));
-    return NextResponse.json(formatted);
+    const { data: rows, error } = await supabase
+      .from('news')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+    return NextResponse.json(rows);
   } catch (error) {
+    console.error('Fetch news error:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
 }
@@ -25,12 +27,22 @@ export async function POST(req) {
 
   try {
     const data = await req.json();
-    const [result] = await pool.execute(
-      `INSERT INTO news (title, category, author, news_date, content, image) VALUES (?, ?, ?, ?, ?, ?)`,
-      [data.title, data.category, data.author, data.date, data.content, data.image]
-    );
-    return NextResponse.json({ success: true, id: result.insertId });
+    const { data: result, error } = await supabase
+      .from('news')
+      .insert([{
+        title: data.title,
+        category: data.category,
+        author: data.author,
+        date: data.date,
+        content: data.content,
+        image: typeof data.image === 'string' ? JSON.parse(data.image) : data.image
+      }])
+      .select();
+
+    if (error) throw error;
+    return NextResponse.json({ success: true, id: result?.[0]?.id });
   } catch (error) {
+    console.error('Create news error:', error);
     return NextResponse.json({ error: 'Failed to create news' }, { status: 500 });
   }
 }
@@ -40,12 +52,22 @@ export async function PUT(req) {
 
   try {
     const data = await req.json();
-    await pool.execute(
-      `UPDATE news SET title=?, category=?, author=?, news_date=?, content=?, image=? WHERE id=?`,
-      [data.title, data.category, data.author, data.date, data.content, data.image, data.id]
-    );
+    const { error } = await supabase
+      .from('news')
+      .update({
+        title: data.title,
+        category: data.category,
+        author: data.author,
+        date: data.date,
+        content: data.content,
+        image: typeof data.image === 'string' ? JSON.parse(data.image) : data.image
+      })
+      .eq('id', data.id);
+
+    if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('Update news error:', error);
     return NextResponse.json({ error: 'Failed to update news' }, { status: 500 });
   }
 }
@@ -55,9 +77,15 @@ export async function DELETE(req) {
 
   try {
     const data = await req.json();
-    await pool.execute('DELETE FROM news WHERE id=?', [data.id]);
+    const { error } = await supabase
+      .from('news')
+      .delete()
+      .eq('id', data.id);
+      
+    if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('Delete news error:', error);
     return NextResponse.json({ error: 'Failed to delete news' }, { status: 500 });
   }
 }
