@@ -3,7 +3,7 @@ import pool from '@/lib/db';
 
 async function getLatestNews() {
   try {
-    const [rows] = await pool.query('SELECT * FROM news ORDER BY news_date DESC LIMIT 3');
+    const [rows] = await pool.query('SELECT * FROM news ORDER BY date DESC LIMIT 3');
     return rows;
   } catch (error) {
     console.error(error);
@@ -134,7 +134,7 @@ export default async function Home() {
                     </div>
                     <div className="news-content" style={{ padding: '20px' }}>
                       <div className="news-date" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '10px' }}>
-                        <i className="fa-regular fa-calendar"></i> {new Date(news.news_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        <i className="fa-regular fa-calendar"></i> {new Date(news.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </div>
                       <h3 style={{ marginBottom: '10px', fontSize: '1.2rem', lineHeight: '1.4' }}>{news.title}</h3>
                       <p className="news-desc" style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{news.content}</p>

@@ -110,20 +110,10 @@ export default function NewsPage() {
     const method = formData.id ? 'PUT' : 'POST';
 
     try {
-      // 1. Upload Images to Cloudinary first
+      // Menyimpan data berita dengan gambar base64 ke database langsung
       let finalUrls = [];
       if (uploadedFiles.length > 0) {
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ images: uploadedFiles })
-        });
-        
-        if (!uploadRes.ok) {
-          throw new Error('Gagal mengupload gambar ke Cloudinary');
-        }
-        const data = await uploadRes.json();
-        finalUrls = data.urls;
+        finalUrls = uploadedFiles;
       } else if (formData.image && formData.image.trim() !== '') {
         finalUrls = [formData.image.trim()];
       }

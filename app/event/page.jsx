@@ -119,26 +119,14 @@ export default function EventsPage() {
     }
 
     try {
-      // 1. Upload Images to Cloudinary first
+      // Menyimpan data event dengan gambar base64 ke database langsung
       let finalUrls = [];
       if (uploadedFiles.length > 0) {
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ images: uploadedFiles })
-        });
-        
-        if (!uploadRes.ok) {
-          throw new Error('Gagal mengupload gambar ke Cloudinary');
-        }
-        const data = await uploadRes.json();
-        finalUrls = data.urls;
+        finalUrls = uploadedFiles;
       } else if (formData.image && formData.image.trim() !== '') {
-        // Fallback ke input URL jika tidak ada file yang dipilih
         finalUrls = [formData.image.trim()];
       }
 
-      // 2. Save Event Data with the new URLs
       const payload = { ...formData, icon, image: JSON.stringify(finalUrls) };
 
       const res = await fetch('/api/events', {

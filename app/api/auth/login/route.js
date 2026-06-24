@@ -12,8 +12,8 @@ export async function POST(req) {
     }
 
     const [rows] = await pool.execute(
-      'SELECT * FROM users WHERE username = ? OR email = ?',
-      [username, username]
+      'SELECT * FROM users WHERE username = ?',
+      [username]
     );
 
     const user = rows[0];
